@@ -56,6 +56,19 @@ def logout():
     session.clear()
     return redirect(url_for("login"))
 
+@app.after_request
+def add_security_headers(response):
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "DENY"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    response.headers["Content-Security-Policy"] = (
+        "default-src 'self'; "
+        "style-src 'self' 'unsafe-inline'; "
+        "form-action 'self'; "
+        "frame-ancestors 'none'; "
+        "base-uri 'self'"
+    )
+    return response
 
 if __name__ == "__main__":
     app.run(debug=False)
