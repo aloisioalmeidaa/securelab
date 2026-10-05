@@ -53,6 +53,12 @@
     <a href="{{ url_for('editar_amostra', amostra_id=amostra['id']) }}">
         Editar
     </a>
+
+    |
+    
+    <a href="{{ url_for('excluir_amostra', amostra_id=amostra['id']) }}">
+        Excluir
+    </a>
 </td>
                         </tr>
                     {% endfor %}

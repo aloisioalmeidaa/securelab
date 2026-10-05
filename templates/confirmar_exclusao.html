@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Excluir Amostra - SecureLab</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Excluir Amostra</h1>
+
+        <p>Você tem certeza de que deseja excluir esta amostra?</p>
+
+        <div class="status">
+            <p>
+                <strong>Identificador:</strong>
+                {{ amostra["identificador"] }}
+            </p>
+
+            <p>
+                <strong>Tipo:</strong>
+                {{ amostra["tipo"] }}
+            </p>
+
+            <p>
+                <strong>Status:</strong>
+                {{ amostra["status"] }}
+            </p>
+        </div>
+
+        <form method="POST">
+            <input
+                type="hidden"
+                name="csrf_token"
+                value="{{ csrf_token() }}"
+            >
+
+            <button type="submit">
+                Confirmar exclusão
+            </button>
+        </form>
+
+        <p>
+            <a href="/dashboard">Cancelar e voltar ao painel</a>
+        </p>
+    </div>
+
+</body>
+</html>

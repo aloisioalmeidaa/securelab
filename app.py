@@ -230,6 +230,66 @@ def editar_amostra(amostra_id):
     )
 
 # --------------------------------------------------
+# EXCLUIR AMOSTRA
+# --------------------------------------------------
+
+@app.route(
+    "/amostras/<int:amostra_id>/excluir",
+    methods=["GET", "POST"]
+)
+def excluir_amostra(amostra_id):
+
+    # Somente usuários autenticados podem excluir
+    if not session.get("authenticated"):
+        return redirect(url_for("login"))
+
+    connection = sqlite3.connect("securelab.db")
+    connection.row_factory = sqlite3.Row
+
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            id,
+            identificador,
+            tipo,
+            status
+        FROM amostras
+        WHERE id = ?
+        """,
+        (amostra_id,)
+    )
+
+    amostra = cursor.fetchone()
+
+    if amostra is None:
+        connection.close()
+        return redirect(url_for("dashboard"))
+
+    if request.method == "POST":
+
+        cursor.execute(
+            """
+            DELETE FROM amostras
+            WHERE id = ?
+            """,
+            (amostra_id,)
+        )
+
+        connection.commit()
+        connection.close()
+
+        return redirect(url_for("dashboard"))
+
+    connection.close()
+
+    return render_template(
+        "confirmar_exclusao.html",
+        amostra=amostra
+    )
+
+# --------------------------------------------------
 # DASHBOARD
 # --------------------------------------------------
 
