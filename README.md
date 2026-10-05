@@ -1,93 +1,144 @@
 # 🔐 SecureLab
 
-Projeto desenvolvido para a disciplina de **Projeto Aplicado**, com foco na aplicação prática dos princípios de **Secure by Design** e **Secure by Default** durante o desenvolvimento e a implantação de uma aplicação Web.
+O **SecureLab** é uma aplicação Web para registro e acompanhamento simplificado de amostras laboratoriais.
 
-O **SecureLab** é uma aplicação Web simples desenvolvida em Python utilizando o framework Flask. O sistema possui autenticação de usuário, gerenciamento de sessão, área restrita e logout seguro.
+O projeto foi desenvolvido para a disciplina de **Projeto Aplicado**, com foco na implementação prática dos conceitos de **Secure by Design**, **Secure by Default**, segurança de aplicações Web, controle de versão e implantação automatizada.
 
-O projeto foi propositalmente mantido simples para permitir maior foco nas práticas de segurança, versionamento, infraestrutura e implantação contínua.
+A aplicação foi desenvolvida em Python utilizando o framework Flask e permite que um usuário autenticado cadastre, consulte, atualize e exclua amostras laboratoriais.
 
 ---
 
-# 📌 Objetivo
+# 🎯 Objetivo do projeto
 
-O objetivo deste projeto é demonstrar um fluxo de desenvolvimento semelhante ao utilizado em ambientes reais:
+O objetivo do SecureLab é demonstrar o desenvolvimento de uma aplicação Web simples, porém funcional, incorporando práticas de segurança desde as primeiras etapas do desenvolvimento.
+
+O sistema permite realizar o acompanhamento básico do ciclo de uma amostra laboratorial:
 
 ```text
-Ambiente de Desenvolvimento
-          ↓
-        GitHub
-          ↓
-    GitHub Actions
-          ↓
- Servidor em Nuvem
-          ↓
-    Nginx + HTTPS
-          ↓
-       SecureLab
+Login
+  ↓
+Dashboard
+  ↓
+Cadastrar amostra
+  ↓
+Armazenar no banco SQLite
+  ↓
+Consultar amostras
+  ↓
+Atualizar status e observação
+  ↓
+Excluir amostra
 ```
 
-Além da aplicação Web, o projeto contempla:
+Além das funcionalidades da aplicação, o projeto contempla:
 
 - Controle de versão com Git;
 - Repositório público no GitHub;
 - Proteção de credenciais;
-- Controles baseados no OWASP Top 10:2025;
-- Servidor Linux em nuvem;
-- Hardening básico do servidor;
+- Banco de dados SQLite;
+- Proteção contra CSRF;
+- Controle de acesso;
+- Gerenciamento de sessão;
+- Cabeçalhos HTTP de segurança;
+- Mitigações relacionadas ao OWASP Top 10:2025;
+- Futuro deploy em servidor Linux;
 - HTTPS;
-- Implantação automatizada utilizando CI/CD.
+- Hardening do servidor;
+- CI/CD utilizando GitHub Actions.
 
 ---
 
-# 🖥️ Funcionalidades da aplicação
+# 🧪 Funcionalidades
 
-Atualmente a aplicação possui:
+O SecureLab atualmente possui:
 
-- Tela de Login;
-- Autenticação utilizando usuário e senha;
-- Senha armazenada na forma de hash;
-- Dashboard protegido;
-- Controle de sessão;
-- Expiração da sessão após 30 minutos;
-- Logout utilizando requisição POST;
-- Proteção contra CSRF;
-- Credenciais armazenadas fora do código-fonte;
+- Login de usuário;
+- Dashboard protegido por autenticação;
+- Cadastro de amostras;
+- Listagem das amostras cadastradas;
+- Persistência de dados em SQLite;
+- Atualização do status da amostra;
+- Atualização das observações;
+- Exclusão de amostras;
+- Página de confirmação antes da exclusão;
+- Logout seguro;
+- Sessão com tempo de expiração;
+- Proteção CSRF;
 - Cabeçalhos HTTP de segurança;
-- Interface Web responsiva simples.
+- Senhas armazenadas utilizando hash;
+- Credenciais fora do código-fonte.
+
+---
+
+# 🧫 Dados armazenados para cada amostra
+
+Cada amostra contém:
+
+```text
+ID
+Identificador
+Tipo
+Data
+Status
+Observação
+```
+
+Exemplo:
+
+```text
+Identificador: AMO-001
+Tipo: Soro
+Data: 2026-10-05
+Status: Em análise
+Observação: Amostra recebida para análise.
+```
+
+Os possíveis status atualmente são:
+
+```text
+Recebida
+Em análise
+Finalizada
+```
 
 ---
 
 # 🛠️ Tecnologias utilizadas
 
-## Aplicação
+## Backend
 
 - Python
 - Flask
 - Flask-WTF
 - Werkzeug
 - python-dotenv
+
+## Banco de dados
+
+- SQLite
+
+## Frontend
+
 - HTML5
 - CSS3
+- Jinja2
 
 ## Versionamento
 
 - Git
 - GitHub
 
-## Infraestrutura
+## Infraestrutura planejada
 
-Planejado para o ambiente de produção:
-
-- Ubuntu Server ou Debian
+- Linux Ubuntu ou Debian
 - Nginx
-- Fail2Ban
 - SSH
+- UFW
+- Fail2Ban
 - Certbot
 - Let's Encrypt
 
-## CI/CD
-
-Planejado:
+## CI/CD planejado
 
 - GitHub Actions
 - GitHub Secrets
@@ -106,21 +157,64 @@ securelab/
 │
 ├── templates/
 │   ├── login.html
-│   └── dashboard.html
+│   ├── dashboard.html
+│   ├── nova_amostra.html
+│   ├── editar_amostra.html
+│   └── confirmar_exclusao.html
 │
 └── static/
     └── style.css
 ```
 
-O arquivo `.env` existe apenas no ambiente local ou de produção e **não é armazenado no repositório GitHub**.
+Os seguintes arquivos locais não são enviados ao GitHub:
+
+```text
+.env
+.venv/
+securelab.db
+__pycache__/
+```
 
 ---
 
-# 🔑 Configuração das credenciais
+# 🗄️ Banco de dados
 
-As credenciais da aplicação não ficam diretamente no código-fonte.
+A aplicação utiliza SQLite.
 
-São utilizadas variáveis de ambiente:
+O banco é criado automaticamente com o nome:
+
+```text
+securelab.db
+```
+
+A tabela utilizada é:
+
+```text
+amostras
+```
+
+Sua estrutura é:
+
+```sql
+CREATE TABLE IF NOT EXISTS amostras (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    identificador TEXT NOT NULL UNIQUE,
+    tipo TEXT NOT NULL,
+    data TEXT NOT NULL,
+    status TEXT NOT NULL,
+    observacao TEXT
+)
+```
+
+O arquivo do banco não é enviado para o GitHub.
+
+---
+
+# 🔑 Variáveis de ambiente
+
+Informações sensíveis não ficam diretamente no código-fonte.
+
+A aplicação utiliza as seguintes variáveis:
 
 ```text
 SECRET_KEY
@@ -128,7 +222,13 @@ APP_USERNAME
 APP_PASSWORD_HASH
 ```
 
-Exemplo de estrutura do arquivo `.env`:
+Elas são armazenadas localmente no arquivo:
+
+```text
+.env
+```
+
+Exemplo de estrutura:
 
 ```env
 SECRET_KEY=sua_chave_secreta
@@ -136,94 +236,90 @@ APP_USERNAME=seu_usuario
 APP_PASSWORD_HASH=hash_da_senha
 ```
 
-> O arquivo `.env` não deve ser enviado para o GitHub.
-
-A senha em texto puro também não é armazenada pela aplicação.
+O arquivo `.env` está listado no `.gitignore` e não é enviado para o repositório público.
 
 ---
 
-# 🔒 Segurança da aplicação
+# 🔒 Segurança
 
-O projeto utiliza controles baseados no **OWASP Top 10:2025**.
+O projeto implementa controles associados ao **OWASP Top 10:2025**.
 
-Foram selecionadas e mitigadas, no mínimo, as seguintes categorias:
+As principais categorias abordadas atualmente são:
 
-1. **A01:2025 - Broken Access Control**
-2. **A02:2025 - Security Misconfiguration**
-3. **A07:2025 - Authentication Failures**
+```text
+A01:2025 - Broken Access Control
+A02:2025 - Security Misconfiguration
+A05:2025 - Injection
+A07:2025 - Authentication Failures
+```
 
 ---
 
 # 🛡️ A01:2025 - Broken Access Control
 
-O controle de acesso impede que usuários não autenticados acessem diretamente áreas protegidas da aplicação.
+As páginas internas da aplicação só podem ser acessadas depois da autenticação.
 
-O dashboard está disponível na rota:
-
-```text
-/dashboard
-```
-
-Antes de exibir a página, a aplicação verifica se existe uma sessão autenticada.
-
-Exemplo implementado:
+Antes de permitir acesso às rotas protegidas, é realizada a verificação:
 
 ```python
 if not session.get("authenticated"):
     return redirect(url_for("login"))
 ```
 
-Portanto, mesmo que um usuário tente acessar diretamente:
+Esse controle é aplicado em funcionalidades como:
 
 ```text
-http://servidor/dashboard
+/dashboard
+/amostras/nova
+/amostras/<id>/editar
+/amostras/<id>/excluir
 ```
 
-sem ter realizado login, será redirecionado para a tela de autenticação.
+Dessa forma, usuários não autenticados não podem acessar diretamente as funcionalidades de gerenciamento de amostras.
 
-## Proteção contra CSRF
+---
 
-Os formulários da aplicação também utilizam tokens CSRF.
+# 🛡️ Proteção CSRF
 
-Exemplo:
+Os formulários que alteram o estado da aplicação são protegidos com tokens CSRF.
 
-```html
-<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-```
-
-A proteção é habilitada no Flask através de:
+A proteção é habilitada por:
 
 ```python
 csrf = CSRFProtect(app)
 ```
 
-Essa proteção é aplicada tanto ao formulário de login quanto ao processo de logout.
+Os formulários possuem um token:
 
-O OWASP Top 10:2025 inclui falhas de controle de acesso e também associa CSRF a essa categoria.
+```html
+<input
+    type="hidden"
+    name="csrf_token"
+    value="{{ csrf_token() }}"
+>
+```
+
+A proteção é utilizada nas operações de:
+
+- Login;
+- Cadastro de amostra;
+- Edição da amostra;
+- Exclusão da amostra;
+- Logout.
 
 ---
 
 # ⚙️ A02:2025 - Security Misconfiguration
 
-Foram aplicadas configurações destinadas a reduzir a exposição causada por configurações inseguras.
+Foram implementadas configurações destinadas a reduzir riscos causados por configurações inseguras.
 
-## Debug desativado
-
-O servidor Flask é iniciado localmente com:
+O modo debug do Flask permanece desabilitado:
 
 ```python
 app.run(debug=False)
 ```
 
-Isso evita a exposição do debugger do Flask.
-
----
-
-## Cabeçalhos HTTP de segurança
-
-A aplicação adiciona automaticamente cabeçalhos de segurança às respostas HTTP.
-
-Foram configurados:
+Também foram adicionados cabeçalhos HTTP de segurança:
 
 ```text
 X-Content-Type-Options: nosniff
@@ -232,14 +328,20 @@ Referrer-Policy: strict-origin-when-cross-origin
 Content-Security-Policy
 ```
 
-Exemplo da implementação:
+A implementação é realizada por:
 
 ```python
 @app.after_request
 def add_security_headers(response):
+
     response.headers["X-Content-Type-Options"] = "nosniff"
+
     response.headers["X-Frame-Options"] = "DENY"
-    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+
+    response.headers["Referrer-Policy"] = (
+        "strict-origin-when-cross-origin"
+    )
+
     response.headers["Content-Security-Policy"] = (
         "default-src 'self'; "
         "style-src 'self' 'unsafe-inline'; "
@@ -247,48 +349,116 @@ def add_security_headers(response):
         "frame-ancestors 'none'; "
         "base-uri 'self'"
     )
+
     return response
 ```
 
-Esses cabeçalhos auxiliam na redução de riscos relacionados a:
+Esses controles auxiliam na redução de riscos como:
 
 - Clickjacking;
 - MIME sniffing;
-- Carregamento de recursos não autorizados;
-- Injeção de conteúdo;
-- Vazamento desnecessário de informações de referência.
+- Carregamento de conteúdo não autorizado;
+- Exposição desnecessária de informações.
+
+---
+
+# 💉 A05:2025 - Injection
+
+As consultas ao banco de dados utilizam parâmetros em vez de concatenar entradas fornecidas pelo usuário diretamente ao SQL.
+
+Exemplo de inserção:
+
+```python
+cursor.execute(
+    """
+    INSERT INTO amostras
+    (identificador, tipo, data, status, observacao)
+    VALUES (?, ?, ?, ?, ?)
+    """,
+    (
+        identificador,
+        tipo,
+        data,
+        status,
+        observacao
+    )
+)
+```
+
+Exemplo de consulta:
+
+```python
+cursor.execute(
+    """
+    SELECT *
+    FROM amostras
+    WHERE id = ?
+    """,
+    (amostra_id,)
+)
+```
+
+Exemplo de exclusão:
+
+```python
+cursor.execute(
+    """
+    DELETE FROM amostras
+    WHERE id = ?
+    """,
+    (amostra_id,)
+)
+```
+
+O valor informado pelo usuário não é incorporado diretamente ao comando SQL.
+
+Essa abordagem reduz o risco de ataques de SQL Injection.
 
 ---
 
 # 👤 A07:2025 - Authentication Failures
 
-A aplicação possui controles destinados à proteção do processo de autenticação.
+As credenciais não são inseridas diretamente no código-fonte.
 
-## Hash da senha
-
-A senha não é armazenada em texto puro.
-
-O hash é criado utilizando os mecanismos disponibilizados pelo Werkzeug.
-
-Na autenticação, a senha informada pelo usuário é comparada ao hash utilizando:
+O usuário é carregado através de:
 
 ```python
-check_password_hash()
+os.getenv("APP_USERNAME")
 ```
 
-Exemplo:
+O hash da senha é carregado por:
+
+```python
+os.getenv("APP_PASSWORD_HASH")
+```
+
+A senha original não é armazenada pela aplicação.
+
+A validação é realizada utilizando:
 
 ```python
 check_password_hash(password_hash, password)
 ```
 
-Dessa forma, a aplicação não precisa armazenar a senha original.
+---
+
+# 🔐 Hash da senha
+
+A senha é transformada em um hash utilizando recursos disponibilizados pelo Werkzeug.
+
+Para gerar um hash localmente:
+
+```powershell
+python -c "from getpass import getpass; from werkzeug.security import generate_password_hash; print(generate_password_hash(getpass('Digite a senha: ')))"
+```
+
+A senha em texto puro não deve ser armazenada no código-fonte nem enviada ao GitHub.
 
 ---
 
 # 🍪 Segurança da sessão
 
-A aplicação configura propriedades adicionais para o cookie de sessão:
+O SecureLab utiliza configurações adicionais para o cookie de sessão:
 
 ```python
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -297,35 +467,23 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
 
 ## HttpOnly
 
-O atributo:
-
-```text
-HttpOnly
-```
-
-impede que JavaScript executado no navegador acesse diretamente o cookie de sessão.
+O atributo `HttpOnly` impede que scripts executados no navegador acessem diretamente o cookie da sessão.
 
 ## SameSite
 
-O atributo:
-
-```text
-SameSite=Lax
-```
-
-reduz o envio do cookie em determinados contextos entre sites diferentes, funcionando como uma camada adicional de proteção contra CSRF.
+O atributo `SameSite=Lax` limita o envio do cookie em determinados contextos originados por outros sites.
 
 ---
 
 # ⏱️ Expiração da sessão
 
-A sessão autenticada possui tempo máximo configurado de:
+A sessão possui duração máxima configurada de:
 
 ```text
 30 minutos
 ```
 
-Implementação:
+Configuração:
 
 ```python
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
@@ -337,66 +495,83 @@ Após autenticação:
 session.permanent = True
 ```
 
-Isso evita que uma sessão permaneça válida indefinidamente.
-
 ---
 
-# 🚪 Logout seguro
+# 🚪 Logout
 
-O logout não é realizado por uma requisição GET.
-
-A aplicação utiliza:
+O logout utiliza uma requisição HTTP POST:
 
 ```python
 @app.route("/logout", methods=["POST"])
 ```
 
-O formulário também contém proteção CSRF:
+O formulário de logout possui proteção CSRF.
 
-```html
-<form method="POST" action="/logout">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button type="submit">Logout</button>
-</form>
-```
-
-Ao realizar logout:
+Após o logout:
 
 ```python
 session.clear()
 ```
 
-remove os dados da sessão autenticada.
+remove as informações da sessão.
 
 ---
 
-# 🔐 Proteção de informações sensíveis
+# 🗑️ Exclusão segura de amostras
 
-O arquivo `.gitignore` impede que informações sensíveis e arquivos locais sejam enviados ao GitHub.
+A exclusão de uma amostra exige uma etapa de confirmação.
 
-Configuração utilizada:
+O fluxo é:
+
+```text
+Dashboard
+    ↓
+Excluir
+    ↓
+Página de confirmação
+    ↓
+POST + CSRF
+    ↓
+Exclusão no SQLite
+```
+
+A exclusão efetiva utiliza uma consulta parametrizada:
+
+```python
+cursor.execute(
+    """
+    DELETE FROM amostras
+    WHERE id = ?
+    """,
+    (amostra_id,)
+)
+```
+
+---
+
+# 🔐 Proteção de arquivos sensíveis
+
+O `.gitignore` impede o envio de arquivos locais e sensíveis ao GitHub.
+
+Exemplo:
 
 ```gitignore
-# Credenciais e segredos
 .env
-
-# Ambiente virtual Python
 .venv/
-
-# Arquivos temporários do Python
+securelab.db
 __pycache__/
 *.pyc
 ```
 
-Assim, arquivos contendo:
+Assim, informações como:
 
-- Senhas;
-- Hashes;
 - Chaves;
-- Tokens;
+- Hashes;
 - Variáveis de ambiente;
+- Banco de dados local;
+- Arquivos temporários;
 
-não são versionados no repositório público.
+não são incluídas no repositório público.
 
 ---
 
@@ -405,7 +580,7 @@ não são versionados no repositório público.
 ## 1. Clonar o projeto
 
 ```powershell
-git clone https://github.com/aloisioalmeidaa/securelab.git
+git clone REPOSITORIO_DO_PROJETO
 ```
 
 Entrar na pasta:
@@ -416,9 +591,7 @@ cd securelab
 
 ---
 
-## 2. Criar o ambiente virtual
-
-No Windows:
+## 2. Criar ambiente virtual
 
 ```powershell
 py -m venv .venv
@@ -428,15 +601,13 @@ py -m venv .venv
 
 ## 3. Ativar o ambiente virtual
 
-PowerShell:
-
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
 ---
 
-## 4. Instalar as dependências
+## 4. Instalar dependências
 
 ```powershell
 pip install -r requirements.txt
@@ -444,15 +615,15 @@ pip install -r requirements.txt
 
 ---
 
-## 5. Configurar as variáveis de ambiente
+## 5. Criar o arquivo `.env`
 
-Criar um arquivo:
+Criar:
 
 ```text
 .env
 ```
 
-Adicionar:
+Com:
 
 ```env
 SECRET_KEY=sua_chave_secreta
@@ -460,53 +631,47 @@ APP_USERNAME=seu_usuario
 APP_PASSWORD_HASH=hash_da_senha
 ```
 
-Para gerar uma chave secreta:
+---
+
+## 6. Gerar uma SECRET_KEY
 
 ```powershell
 python -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-Para gerar o hash de uma senha:
-
-```powershell
-python -c "from getpass import getpass; from werkzeug.security import generate_password_hash; print(generate_password_hash(getpass('Digite a senha: ')))"
-```
-
 ---
 
-## 6. Executar a aplicação
+## 7. Executar
 
 ```powershell
 python app.py
 ```
 
-A aplicação ficará disponível localmente em:
+A aplicação ficará disponível em:
 
 ```text
 http://127.0.0.1:5000
 ```
 
+Durante os testes locais deve ser utilizado sempre o mesmo host para preservar corretamente o cookie de sessão.
+
 ---
 
 # 🧪 Testes funcionais
 
-Os seguintes testes podem ser realizados manualmente.
-
-## Login correto
-
-Informar credenciais válidas.
+## Login válido
 
 Resultado esperado:
 
 ```text
-Login → Dashboard
+Login
+  ↓
+Dashboard
 ```
 
 ---
 
-## Login incorreto
-
-Informar usuário ou senha incorretos.
+## Login inválido
 
 Resultado esperado:
 
@@ -514,13 +679,11 @@ Resultado esperado:
 Usuário ou senha inválidos.
 ```
 
-A aplicação permanece na página de login.
-
 ---
 
-## Acesso não autorizado
+## Acesso ao dashboard sem autenticação
 
-Sem estar autenticado, acessar diretamente:
+Tentar acessar:
 
 ```text
 /dashboard
@@ -529,45 +692,74 @@ Sem estar autenticado, acessar diretamente:
 Resultado esperado:
 
 ```text
-Redirecionamento para a página de login.
+Redirecionamento para Login
 ```
 
 ---
 
-## Logout
-
-Após login, utilizar o botão:
-
-```text
-Logout
-```
+## Cadastro de amostra
 
 Resultado esperado:
 
 ```text
-Sessão encerrada → Login
+Nova amostra
+  ↓
+Validação
+  ↓
+SQLite
+  ↓
+Dashboard
+```
+
+---
+
+## Edição
+
+O usuário pode alterar:
+
+```text
+Status
+Observação
+```
+
+A alteração é persistida no SQLite.
+
+---
+
+## Exclusão
+
+Resultado esperado:
+
+```text
+Excluir
+  ↓
+Confirmação
+  ↓
+POST protegido por CSRF
+  ↓
+Registro removido
 ```
 
 ---
 
 # 🔎 Verificação dos cabeçalhos HTTP
 
-Durante o desenvolvimento local, os cabeçalhos podem ser verificados utilizando:
+Os cabeçalhos podem ser verificados localmente com:
 
 ```powershell
 curl.exe -I http://127.0.0.1:5000
 ```
 
-Exemplo de resultado:
+Entre os cabeçalhos esperados estão:
 
 ```text
 X-Content-Type-Options: nosniff
 X-Frame-Options: DENY
 Referrer-Policy: strict-origin-when-cross-origin
-Content-Security-Policy: ...
+Content-Security-Policy
 ```
 
-O cookie de sessão também apresenta:
+O cookie de sessão deve apresentar:
 
 ```text
 HttpOnly
@@ -576,38 +768,34 @@ SameSite=Lax
 
 ---
 
-# ☁️ Infraestrutura de produção
+# ☁️ Arquitetura planejada para produção
 
-A aplicação será implantada em uma máquina virtual Linux utilizando:
-
-```text
-Ubuntu Server ou Debian
-```
-
-A arquitetura prevista é:
+A arquitetura final prevista é:
 
 ```text
-Internet
-   │
-   ▼
-HTTPS
-   │
-   ▼
-Nginx
-   │
-   ▼
-Aplicação Flask
+                 Internet
+                    │
+                    ▼
+                  HTTPS
+                    │
+                    ▼
+                  Nginx
+                    │
+                    ▼
+                SecureLab
+                 Flask
+                    │
+                    ▼
+                  SQLite
 ```
 
-O servidor Flask utilizado durante o desenvolvimento não será exposto diretamente à Internet.
+O servidor de desenvolvimento fornecido pelo Flask não será exposto diretamente à Internet.
 
 ---
 
-# 🔥 Firewall e princípio do menor privilégio
+# 🔥 Firewall
 
-Na infraestrutura de produção serão expostas somente as portas necessárias.
-
-Exemplo:
+Na infraestrutura de produção serão liberadas somente as portas necessárias.
 
 ```text
 22  → SSH
@@ -615,32 +803,34 @@ Exemplo:
 443 → HTTPS
 ```
 
-A porta SSH será utilizada somente para administração e implantação.
+O princípio utilizado será o de menor privilégio.
 
-O acesso SSH utilizará autenticação por chave em vez de senha.
+---
+
+# 🔑 SSH
+
+O acesso administrativo ao servidor deverá utilizar autenticação por chave SSH.
+
+O login por senha deverá ser restringido quando a infraestrutura estiver devidamente configurada.
 
 ---
 
 # 🛡️ Fail2Ban
 
-O servidor será configurado com Fail2Ban para proteção do serviço SSH.
+O servidor será protegido utilizando Fail2Ban.
 
-Configuração requerida pelo projeto:
+Configuração planejada de acordo com os requisitos da disciplina:
 
 ```text
-Tolerância: 4 tentativas
-Banimento: 24 horas
+Máximo de tentativas: 4
+Tempo de banimento: 24 horas
 ```
-
-Esse controle será aplicado durante a implantação da infraestrutura.
 
 ---
 
 # 🔐 HTTPS
 
-A aplicação em produção utilizará HTTPS.
-
-A configuração prevista utilizará:
+A aplicação em produção utilizará:
 
 ```text
 Nginx
@@ -648,27 +838,23 @@ Certbot
 Let's Encrypt
 ```
 
-O tráfego HTTP será redirecionado automaticamente para HTTPS.
+O tráfego HTTP deverá ser redirecionado para HTTPS.
 
-Após a ativação do HTTPS também será habilitada a configuração:
+Quando HTTPS estiver configurado, também será habilitado:
 
 ```python
-SESSION_COOKIE_SECURE = True
+app.config["SESSION_COOKIE_SECURE"] = True
 ```
 
-Dessa maneira, o cookie de sessão será transmitido apenas utilizando uma conexão HTTPS.
+Isso fará com que o cookie de sessão seja enviado somente por conexões HTTPS.
 
 ---
 
 # 🔄 CI/CD
 
-O processo de implantação será automatizado utilizando:
+O deploy será automatizado utilizando GitHub Actions.
 
-```text
-GitHub Actions
-```
-
-O fluxo esperado será:
+Fluxo planejado:
 
 ```text
 Desenvolvimento
@@ -682,31 +868,19 @@ GitHub Actions
       │
       │ SSH
       ▼
-Servidor em Nuvem
+Servidor Linux
       │
       ▼
 Atualização da aplicação
-```
-
-A pipeline será executada automaticamente após:
-
-```bash
-git push origin main
 ```
 
 ---
 
 # 🔑 GitHub Secrets
 
-As credenciais necessárias para a pipeline não serão armazenadas diretamente no arquivo de workflow.
+As credenciais utilizadas pelo pipeline não serão armazenadas diretamente no workflow.
 
-Serão utilizadas variáveis armazenadas em:
-
-```text
-GitHub Secrets
-```
-
-Exemplos:
+Serão utilizados GitHub Secrets para informações como:
 
 ```text
 SERVER_HOST
@@ -714,119 +888,140 @@ SERVER_USER
 SSH_PRIVATE_KEY
 ```
 
-Dessa forma, informações sensíveis não ficam expostas no repositório.
-
 ---
 
-# ✅ Checklist da entrega
+# ✅ Checklist do projeto
 
 ## Aplicação
 
-- [x] Aplicação Web funcional
-- [x] Tela de Login
-- [x] Página interna protegida
+- [x] Login
+- [x] Dashboard protegido
+- [x] Cadastro de amostras
+- [x] Persistência em SQLite
+- [x] Listagem de amostras
+- [x] Atualização de status
+- [x] Atualização de observações
+- [x] Exclusão de amostras
+- [x] Confirmação antes da exclusão
 - [x] Logout
 - [x] Interface HTML/CSS
-- [x] Proteção CSRF
-- [x] Controle de sessão
-- [x] Senha armazenada como hash
-- [x] Cabeçalhos HTTP de segurança
 
-## GitHub
+## Segurança
 
-- [x] Repositório público
+- [x] Hash de senha
+- [x] Variáveis de ambiente
 - [x] `.gitignore`
-- [x] Credenciais fora do repositório
-- [x] Histórico de commits
-- [x] README
+- [x] Proteção CSRF
+- [x] Sessão autenticada
+- [x] Expiração da sessão
+- [x] Cookie HttpOnly
+- [x] SameSite
+- [x] Cabeçalhos HTTP de segurança
+- [x] Consultas SQL parametrizadas
 
 ## OWASP Top 10:2025
 
 - [x] A01 - Broken Access Control
 - [x] A02 - Security Misconfiguration
+- [x] A05 - Injection
 - [x] A07 - Authentication Failures
+
+## GitHub
+
+- [x] Repositório público
+- [x] Histórico de commits
+- [x] `.gitignore`
+- [x] README
+- [x] Código-fonte versionado
+- [x] Segredos fora do repositório
 
 ## Infraestrutura
 
 - [ ] Servidor Linux em nuvem
-- [ ] SSH utilizando chave
-- [ ] Firewall configurado
-- [ ] Fail2Ban configurado
-- [ ] Nginx configurado
+- [ ] SSH com chave
+- [ ] Firewall
+- [ ] Fail2Ban
+- [ ] Nginx
+- [ ] Servidor WSGI de produção
 
 ## HTTPS
 
 - [ ] Certificado TLS
-- [ ] Certbot / Let's Encrypt
-- [ ] Redirecionamento HTTP → HTTPS
-- [ ] `SESSION_COOKIE_SECURE`
-- [ ] Teste SSL/TLS exigido pela disciplina
+- [ ] Let's Encrypt
+- [ ] Certbot
+- [ ] Redirecionamento HTTP para HTTPS
+- [ ] Cookie Secure
+- [ ] Teste SSL/TLS
 
 ## CI/CD
 
 - [ ] GitHub Actions
 - [ ] GitHub Secrets
 - [ ] Deploy automático
-- [ ] Deploy após push para `main`
+- [ ] Deploy após push para main
 
 ---
 
 # 📚 Referências
 
-## OWASP
+Foram utilizadas como principais referências técnicas:
 
-OWASP Top 10:2025  
-https://top10.owasp.org/2025/
-
-OWASP Top 10:2025 - Broken Access Control  
-https://top10.owasp.org/2025/A01_2025-Broken_Access_Control/
-
-OWASP Cheat Sheet Series - Session Management  
-https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html
-
-OWASP Cheat Sheet Series - Cross-Site Request Forgery Prevention  
-https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
-
-OWASP Cheat Sheet Series - HTTP Headers  
-https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Headers_Cheat_Sheet.html
-
-## Flask
-
-Flask Documentation  
-https://flask.palletsprojects.com/
-
-## Werkzeug
-
-Werkzeug Documentation  
-https://werkzeug.palletsprojects.com/
+- OWASP Top 10:2025;
+- OWASP Cheat Sheet Series - Session Management;
+- OWASP Cheat Sheet Series - Cross-Site Request Forgery Prevention;
+- OWASP Cheat Sheet Series - HTTP Headers;
+- Flask Documentation;
+- Werkzeug Documentation;
+- Python sqlite3 Documentation.
 
 ---
 
-# 📖 Status do projeto
+# 📊 Status atual
 
-O projeto encontra-se em desenvolvimento.
+Atualmente estão concluídas as etapas de:
 
-A aplicação Web e os controles iniciais de segurança já estão implementados.
+```text
+Aplicação Web
+        ✓
+Autenticação
+        ✓
+Banco SQLite
+        ✓
+Cadastro
+        ✓
+Consulta
+        ✓
+Edição
+        ✓
+Exclusão
+        ✓
+Controles de segurança
+        ✓
+Git/GitHub
+        ✓
+```
 
 As próximas etapas são:
 
 ```text
-1. Provisionar servidor Linux em nuvem
-2. Configurar SSH
-3. Configurar firewall
-4. Configurar Fail2Ban
-5. Instalar e configurar Nginx
-6. Publicar a aplicação
-7. Configurar HTTPS
-8. Executar os testes SSL/TLS
-9. Criar pipeline GitHub Actions
-10. Validar o deploy automático
+1. Preparar a aplicação para produção
+2. Criar servidor Linux em nuvem
+3. Configurar acesso SSH
+4. Configurar firewall
+5. Configurar Fail2Ban
+6. Configurar servidor WSGI
+7. Configurar Nginx
+8. Publicar o SecureLab
+9. Configurar HTTPS
+10. Criar pipeline GitHub Actions
+11. Configurar GitHub Secrets
+12. Validar deploy automático
 ```
 
 ---
 
-## Autor
+# 👨‍💻 Autor
 
 **Aloisio Almeida**
 
-Projeto desenvolvido como atividade acadêmica de pós-graduação.
+Projeto acadêmico desenvolvido para disciplina de pós-graduação.
