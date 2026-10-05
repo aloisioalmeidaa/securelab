@@ -26,6 +26,9 @@ csrf = CSRFProtect(app)
 # Configurações de segurança da sessão
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["SESSION_COOKIE_SECURE"] = (
+    os.getenv("APP_ENV") == "production"
+)
 
 # Tempo máximo da sessão autenticada
 app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
