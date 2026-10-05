@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from flask import Flask, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash
 from flask_wtf.csrf import CSRFProtect
+from datetime import timedelta
 
 load_dotenv()
 
@@ -13,6 +14,7 @@ csrf = CSRFProtect(app)
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+app.config["PERMANENT_SESSION_LIFETIME"] = timedelta(minutes=30)
 
 @app.route("/", methods=["GET", "POST"])
 def login():
@@ -30,6 +32,7 @@ def login():
         ):
             session["authenticated"] = True
             session["username"] = username
+            session.permanent = True
             return redirect(url_for("dashboard"))
 
         return render_template(
