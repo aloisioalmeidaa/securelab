@@ -3,11 +3,13 @@ import os
 from dotenv import load_dotenv
 from flask import Flask, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash
+from flask_wtf.csrf import CSRFProtect
 
 load_dotenv()
 
 app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY")
+csrf = CSRFProtect(app)
 
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
@@ -46,7 +48,7 @@ def dashboard():
     return render_template("dashboard.html")
 
 
-@app.route("/logout")
+@app.route("/logout", methods=["POST"])
 def logout():
     session.clear()
     return redirect(url_for("login"))
