@@ -149,6 +149,87 @@ def nova_amostra():
     return render_template("nova_amostra.html")
 
 # --------------------------------------------------
+# EDITAR AMOSTRA
+# --------------------------------------------------
+
+@app.route("/amostras/<int:amostra_id>/editar", methods=["GET", "POST"])
+def editar_amostra(amostra_id):
+
+    # Somente usuários autenticados podem acessar
+    if not session.get("authenticated"):
+        return redirect(url_for("login"))
+
+    connection = sqlite3.connect("securelab.db")
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute(
+        """
+        SELECT
+            id,
+            identificador,
+            tipo,
+            data,
+            status,
+            observacao
+        FROM amostras
+        WHERE id = ?
+        """,
+        (amostra_id,)
+    )
+
+    amostra = cursor.fetchone()
+
+    if amostra is None:
+        connection.close()
+        return redirect(url_for("dashboard"))
+
+    if request.method == "POST":
+
+        status = request.form.get("status", "").strip()
+        observacao = request.form.get("observacao", "").strip()
+
+        status_permitidos = {
+            "Recebida",
+            "Em análise",
+            "Finalizada"
+        }
+
+        if status not in status_permitidos:
+            connection.close()
+
+            return render_template(
+                "editar_amostra.html",
+                amostra=amostra,
+                error="Status inválido."
+            )
+
+        cursor.execute(
+            """
+            UPDATE amostras
+            SET status = ?, observacao = ?
+            WHERE id = ?
+            """,
+            (
+                status,
+                observacao,
+                amostra_id
+            )
+        )
+
+        connection.commit()
+        connection.close()
+
+        return redirect(url_for("dashboard"))
+
+    connection.close()
+
+    return render_template(
+        "editar_amostra.html",
+        amostra=amostra
+    )
+
+# --------------------------------------------------
 # DASHBOARD
 # --------------------------------------------------
 

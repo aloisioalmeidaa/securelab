@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Amostra - SecureLab</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Editar Amostra</h1>
+
+        <p><strong>Identificador:</strong> {{ amostra["identificador"] }}</p>
+        <p><strong>Tipo:</strong> {{ amostra["tipo"] }}</p>
+        <p><strong>Data:</strong> {{ amostra["data"] }}</p>
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <label for="status">Status:</label>
+
+            <select id="status" name="status" required>
+                <option value="Recebida"
+                    {% if amostra["status"] == "Recebida" %}selected{% endif %}>
+                    Recebida
+                </option>
+
+                <option value="Em análise"
+                    {% if amostra["status"] == "Em análise" %}selected{% endif %}>
+                    Em análise
+                </option>
+
+                <option value="Finalizada"
+                    {% if amostra["status"] == "Finalizada" %}selected{% endif %}>
+                    Finalizada
+                </option>
+            </select>
+
+            <label for="observacao">Observação:</label>
+
+            <textarea
+                id="observacao"
+                name="observacao"
+                rows="4"
+            >{{ amostra["observacao"] }}</textarea>
+
+            <button type="submit">Salvar alterações</button>
+        </form>
+
+        <p>
+            <a href="/dashboard">Voltar ao painel</a>
+        </p>
+    </div>
+
+</body>
+</html>

@@ -36,6 +36,7 @@
                         <th>Data</th>
                         <th>Status</th>
                         <th>Observação</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
 
@@ -48,6 +49,11 @@
                             <td>{{ amostra["data"] }}</td>
                             <td>{{ amostra["status"] }}</td>
                             <td>{{ amostra["observacao"] }}</td>
+<td>
+    <a href="{{ url_for('editar_amostra', amostra_id=amostra['id']) }}">
+        Editar
+    </a>
+</td>
                         </tr>
                     {% endfor %}
                 </tbody>
