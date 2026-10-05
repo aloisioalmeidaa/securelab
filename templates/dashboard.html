@@ -4,25 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel - SecureLab</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
-    <h1>Painel do Laboratório</h1>
+    <div class="container dashboard">
+        <h1>Painel do Laboratório</h1>
 
-    <p>Usuário autenticado com sucesso.</p>
+        <p>Usuário autenticado com sucesso.</p>
 
-    <hr>
+        <div class="status">
+            <p><strong>Status do sistema:</strong> Online</p>
+            <p><strong>Projeto:</strong> SecureLab</p>
+            <p><strong>Ambiente:</strong> Desenvolvimento</p>
+        </div>
 
-    <p><strong>Status do sistema:</strong> Online</p>
-    <p><strong>Projeto:</strong> SecureLab</p>
-    <p><strong>Ambiente:</strong> Desenvolvimento</p>
-
-    <br>
-
-    <form method="POST" action="/logout">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    <button type="submit">Logout</button>
-</form>
+        <form method="POST" action="/logout">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">Logout</button>
+        </form>
+    </div>
 
 </body>
 </html>
