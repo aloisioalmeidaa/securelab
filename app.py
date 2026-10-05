@@ -87,6 +87,66 @@ def login():
 
     return render_template("login.html")
 
+# --------------------------------------------------
+# NOVA AMOSTRA
+# --------------------------------------------------
+
+@app.route("/amostras/nova", methods=["GET", "POST"])
+def nova_amostra():
+
+    # Somente usuários autenticados podem acessar
+    if not session.get("authenticated"):
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+
+        identificador = request.form.get("identificador", "").strip()
+        tipo = request.form.get("tipo", "").strip()
+        data = request.form.get("data", "").strip()
+        status = request.form.get("status", "").strip()
+        observacao = request.form.get("observacao", "").strip()
+
+        status_permitidos = {
+            "Recebida",
+            "Em análise",
+            "Finalizada"
+        }
+
+        if (
+            not identificador
+            or not tipo
+            or not data
+            or status not in status_permitidos
+        ):
+            return render_template(
+                "nova_amostra.html",
+                error="Preencha os campos obrigatórios corretamente."
+            )
+
+        connection = sqlite3.connect("securelab.db")
+        cursor = connection.cursor()
+
+        cursor.execute(
+            """
+            INSERT INTO amostras
+            (identificador, tipo, data, status, observacao)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (
+                identificador,
+                tipo,
+                data,
+                status,
+                observacao
+            )
+        )
+
+        connection.commit()
+        connection.close()
+
+        return redirect(url_for("dashboard"))
+
+    return render_template("nova_amostra.html")
 
 # --------------------------------------------------
 # DASHBOARD
@@ -99,7 +159,31 @@ def dashboard():
     if not session.get("authenticated"):
         return redirect(url_for("login"))
 
-    return render_template("dashboard.html")
+    connection = sqlite3.connect("securelab.db")
+    connection.row_factory = sqlite3.Row
+
+    cursor = connection.cursor()
+
+    cursor.execute("""
+        SELECT
+            id,
+            identificador,
+            tipo,
+            data,
+            status,
+            observacao
+        FROM amostras
+        ORDER BY id DESC
+    """)
+
+    amostras = cursor.fetchall()
+
+    connection.close()
+
+    return render_template(
+        "dashboard.html",
+        amostras=amostras
+    )
 
 
 # --------------------------------------------------

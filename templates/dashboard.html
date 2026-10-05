@@ -19,6 +19,46 @@
             <p><strong>Ambiente:</strong> Desenvolvimento</p>
         </div>
 
+        <p>
+            <a href="/amostras/nova">Cadastrar nova amostra</a>
+        </p>
+
+        <h2>Amostras cadastradas</h2>
+
+        {% if amostras %}
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Identificador</th>
+                        <th>Tipo</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Observação</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for amostra in amostras %}
+                        <tr>
+                            <td>{{ amostra["id"] }}</td>
+                            <td>{{ amostra["identificador"] }}</td>
+                            <td>{{ amostra["tipo"] }}</td>
+                            <td>{{ amostra["data"] }}</td>
+                            <td>{{ amostra["status"] }}</td>
+                            <td>{{ amostra["observacao"] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        {% else %}
+
+            <p>Nenhuma amostra cadastrada.</p>
+
+        {% endif %}
+
         <form method="POST" action="/logout">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit">Logout</button>

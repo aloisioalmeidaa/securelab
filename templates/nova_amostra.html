@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nova Amostra - SecureLab</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <div class="container">
+   <h1>Nova Amostra</h1>
+
+{% if error %}
+    <p class="error">{{ error }}</p>
+{% endif %}
+
+<form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+            <label for="identificador">Identificador:</label>
+            <input
+                type="text"
+                id="identificador"
+                name="identificador"
+                placeholder="Ex.: AMO-001"
+                required
+            >
+
+            <label for="tipo">Tipo da amostra:</label>
+            <input
+                type="text"
+                id="tipo"
+                name="tipo"
+                placeholder="Ex.: Soro"
+                required
+            >
+
+            <label for="data">Data:</label>
+            <input
+                type="date"
+                id="data"
+                name="data"
+                required
+            >
+
+            <label for="status">Status:</label>
+            <select id="status" name="status" required>
+                <option value="Recebida">Recebida</option>
+                <option value="Em análise">Em análise</option>
+                <option value="Finalizada">Finalizada</option>
+            </select>
+
+            <label for="observacao">Observação:</label>
+            <textarea
+                id="observacao"
+                name="observacao"
+                rows="4"
+                placeholder="Observações sobre a amostra"
+            ></textarea>
+
+            <button type="submit">Cadastrar amostra</button>
+        </form>
+
+        <p>
+            <a href="/dashboard">Voltar ao painel</a>
+        </p>
+    </div>
+
+</body>
+</html>

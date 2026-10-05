@@ -78,3 +78,56 @@ button:hover {
     border-radius: 8px;
     border: 1px solid #e2e8f0;
 }
+
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+textarea {
+    resize: vertical;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    margin-bottom: 25px;
+    font-size: 0.95rem;
+}
+
+th,
+td {
+    padding: 10px;
+    border: 1px solid #e2e8f0;
+    text-align: left;
+    vertical-align: top;
+}
+
+th {
+    background-color: #f1f5f9;
+}
+
+tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+.dashboard {
+    max-width: 1000px;
+    overflow-x: auto;
+}
+
+a {
+    color: #1d4ed8;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
