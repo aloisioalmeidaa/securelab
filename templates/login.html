@@ -9,7 +9,9 @@
 
     <h1>SecureLab</h1>
     <h2>Login</h2>
-
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
     <form method="POST">
         <label for="username">Usuário:</label>
         <input type="text" id="username" name="username">
